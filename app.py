@@ -60,7 +60,12 @@ def convert():
     # text = text[:1000]
 
     # chama API IA
-    response = requests.post(AI_API_URL, json={"text": text}, timeout=120)
+    try:
+        response = requests.post(AI_API_URL, json={"text": text}, timeout=300)
+        response.raise_for_status()
+
+    except Exception as e:
+        return f"API Error: {str(e)}"
 
     if response.status_code == 200:
 
@@ -73,7 +78,14 @@ def convert():
 
         return send_file(output_path, as_attachment=True)
 
-    return f"Error generating audio: {response.text}"
+    print(response.status_code)
+    print(response.text)
+
+    return f"""
+    Status: {response.status_code}
+    <br>
+    Response: {response.text}
+    """
 
 
 if __name__ == "__main__":
